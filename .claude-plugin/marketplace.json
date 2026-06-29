@@ -1,0 +1,15 @@
+{
+  "name": "get-to-work",
+  "owner": {
+    "name": "CarverHHH",
+    "url": "https://github.com/CarverHHH"
+  },
+  "plugins": [
+    {
+      "name": "get-to-work",
+      "source": "./",
+      "description": "A lightweight state-machine-driven workflow plugin: requirement → spec → plan → TDD execution (Inline/SDD dual-mode) → verification → commit → knowledge capture. 14-state state machine with 4-scenario routing (bug/simple/moderate/complex).",
+      "version": "0.3.0"
+    }
+  ]
+}

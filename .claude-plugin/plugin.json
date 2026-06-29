@@ -1,0 +1,24 @@
+{
+  "name": "get-to-work",
+  "version": "0.3.0",
+  "description": "A lightweight state-machine-driven workflow plugin: requirement → spec → plan → TDD execution (Inline/SDD dual-mode) → verification → commit → knowledge capture. 14-state state machine with 4-scenario routing (bug/simple/moderate/complex).",
+  "author": {
+    "name": "get-to-work"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "workflow",
+    "state-machine",
+    "tdd",
+    "sdd",
+    "spec",
+    "planner",
+    "adr",
+    "verification",
+    "knowledge-capture"
+  ],
+  "commands": ["./commands/"],
+  "skills": ["./workflow-plugin/skills/"],
+  "hooks": "./hooks/hooks.json"
+}

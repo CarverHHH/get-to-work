@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "current_state": "IDLE",
+  "started_at": null,
+  "updated_at": null,
+  "input": null,
+  "complexity": null,
+  "mode": null,
+  "execution_strategy": null,
+
+  "flags": {
+    "needs_clarification": null,
+    "needs_domain_modeling": null,
+    "clarification_done": false,
+    "domain_modeling_done": false
+  },
+
+  "spec": {
+    "path": null,
+    "confirmed": false,
+    "open_questions": 0
+  },
+
+  "plan": {
+    "path": null,
+    "confirmed": false,
+    "total_tasks": 0,
+    "current_task_index": -1,
+    "completed_task_indexes": [],
+    "inline_tasks": null
+  },
+
+  "execution": {
+    "current_task_id": null,
+    "phase": null,
+    "fix_count": 0,
+    "status": null,
+    "strategy": null
+  },
+
+  "verification": {
+    "lint": null,
+    "test": null,
+    "build": null,
+    "passed": false
+  },
+
+  "commit": {
+    "asked": false,
+    "committed": false,
+    "sha": null
+  },
+
+  "knowledge": {
+    "adrs": [],
+    "lessons": [],
+    "patterns": []
+  },
+
+  "stop_reason": null,
+  "stop_resume_state": null,
+  "history": []
+}

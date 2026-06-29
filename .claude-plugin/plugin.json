@@ -19,6 +19,5 @@
     "knowledge-capture"
   ],
   "commands": ["./commands/"],
-  "skills": ["./workflow-plugin/skills/"],
-  "hooks": "./hooks/hooks.json"
+  "skills": ["./workflow-plugin/skills/"]
 }

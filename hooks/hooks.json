@@ -6,7 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/scripts/session-start.js",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-start.js"],
             "timeout": 5
           }
         ]
@@ -18,7 +19,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/scripts/validate-command.js",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/validate-command.js"],
             "timeout": 5
           }
         ]
@@ -28,7 +30,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/scripts/protect-files.js",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/protect-files.js"],
             "timeout": 3
           }
         ]
@@ -40,7 +43,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/scripts/format-file.js",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/format-file.js"],
             "timeout": 60
           }
         ]
@@ -50,7 +54,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/scripts/suggest-compact.js",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/suggest-compact.js"],
             "timeout": 3
           }
         ]
@@ -60,7 +65,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/scripts/observe-patterns.js",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/observe-patterns.js"],
             "timeout": 3
           }
         ]
@@ -72,7 +78,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/scripts/knowledge-prompt.js",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/knowledge-prompt.js"],
             "timeout": 5
           }
         ]
@@ -84,7 +91,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node hooks/scripts/pre-compact.js",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pre-compact.js"],
             "timeout": 10
           }
         ]

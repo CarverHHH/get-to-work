@@ -1,5 +1,7 @@
 # get-to-work — Workflow OS Plugin for Claude Code
 
+> 仓库地址：https://github.com/CarverHHH/get-to-work
+
 一个轻量、**状态机驱动**的 Claude Code 工作流系统。把一句自然语言需求，
 按 14 个状态严格推进成：澄清的共识 → 确认的 spec → 依赖有序的 task list →
 TDD 执行的代码 → fresh-evidence 验证 → 沉淀的知识。
@@ -18,9 +20,12 @@ TDD 执行的代码 → fresh-evidence 验证 → 沉淀的知识。
 ### 方式 A：Claude Code 插件（推荐）
 
 ```bash
-# 用户级
+# 获取项目
+git clone https://github.com/CarverHHH/get-to-work.git
+
+# 用户级安装
 cp -r get-to-work ~/.claude/plugins/get-to-work
-# 或项目级
+# 或项目级（在目标项目目录执行，软链到 clone 的绝对路径）
 ln -s /abs/path/to/get-to-work .claude/get-to-work
 ```
 

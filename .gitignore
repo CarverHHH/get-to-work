@@ -5,3 +5,16 @@
 .vscode/
 .idea/
 *.swp
+
+# get-to-work workflow output (per-project, lives in project .get-to-work/)
+.get-to-work/
+workflow-plugin/state.json
+workflow-plugin/.pre-compact-state.json
+workflow-plugin/.tool-call-counter.json
+workflow-plugin/memory/observations.jsonl
+workflow-plugin/memory/observations.jsonl.old
+workflow-plugin/memory/context.md
+workflow-plugin/memory/specs/
+workflow-plugin/memory/plans/
+workflow-plugin/memory/lessons/
+workflow-plugin/memory/patterns/

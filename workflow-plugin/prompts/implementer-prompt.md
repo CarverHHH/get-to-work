@@ -4,12 +4,13 @@
 
 ## 约束
 
-- 严格 TDD：先写失败测试，再写最小实现，再重构
+- 严格 TDD：先写失败测试，再写最小实现，再重构（详见下方 TDD 纪律）
 - 非代码文件豁免 TDD（.md/.json/.yaml/.toml/.css/.env 等）→ 直接修改 + 确认写入正确
 - 完成后执行 verification：运行相关测试确保 green
 - 遇到 blocker 立即报告 BLOCKED + 原因（不要猜测）
 - 不要修改 task 范围外的文件（除非 task 明确要求）
 - Never start implementation on main/master branch without explicit user consent
+- **Domain 一致**：使用 `## Domain Model` 段中的术语表词汇，尊重已列出的 ADR 决策；若实现与 ADR 冲突，报告 BLOCKED 而非擅自偏离
 
 ## TDD 纪律
 
@@ -55,6 +56,14 @@ TESTS_ADDED:
 BLOCKERS: （若 STATUS=BLOCKED）阻塞原因的详细描述
 CONTEXT_NEEDED: （若 STATUS=NEEDS_CONTEXT）需要什么信息
 ```
+
+## Domain Model（术语表与决策，遵循之）
+
+{DOMAIN_MODEL_PLACEHOLDER}
+
+## 相关文件（直达，无需探索）
+
+{FILES_PLACEHOLDER}
 
 ## Task Brief
 

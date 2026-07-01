@@ -1,6 +1,7 @@
 ---
 name: domain-modeling
 description: Build and sharpen a project's domain model. Use when the user wants to pin down domain terminology or a ubiquitous language, record an architectural decision, or when another skill needs to maintain the domain model.
+disable-model-invocation: true
 ---
 
 # Domain Modeling
@@ -10,7 +11,7 @@ description: Build and sharpen a project's domain model. Use when the user wants
 > 来源：mattpocock `domain-modeling`（含 `CONTEXT-FORMAT.md` / `ADR-FORMAT.md`）。
 > 下方为英文原 prompt，保持原装以发挥原 skill 能力。
 > 路径适配：原版的 `CONTEXT.md` / `docs/adr/` 在本插件统一为
-> `workflow-plugin/memory/context.md` / `workflow-plugin/memory/adr/`。
+> `.get-to-work/memory/context.md` / `.get-to-work/memory/adr/`。
 
 Actively build and sharpen the project's domain model as you design. This is the *active* discipline — challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely *reading* `context.md` for vocabulary is not this skill — that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
 
@@ -19,7 +20,7 @@ Actively build and sharpen the project's domain model as you design. This is the
 Most repos have a single context:
 
 ```
-workflow-plugin/memory/
+.get-to-work/memory/
 ├── context.md
 └── adr/
     ├── 0001-event-sourced-orders.md
@@ -60,7 +61,7 @@ Only offer to create an ADR when all three are true:
 2. **Surprising without context** — a future reader will wonder "why did they do it this way?"
 3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons
 
-If any of the three is missing, skip the ADR. Use the format in `workflow-plugin/memory/adr/0000-template.md`.
+If any of the three is missing, skip the ADR. Use the format in `workflow-plugin/templates/adr-template.md` (single source).
 
 ## context.md format（inline from CONTEXT-FORMAT.md，英文原装）
 
@@ -84,6 +85,8 @@ Rules:
 
 ## Interface with orchestrator（中文适配层）
 
+> 仅在 orchestrator STATE 1.5 上下文中执行下列 state.json / knowledge 写回；经 `/grill-with-docs` 等独立调用本引擎时，跳过 state.json 写回，直接在对话中输出 ADR / `context.md` 更新即可。
+
 - **入口**：orchestrator STATE 1.5（CLARIFICATION）置 `flags.needs_domain_modeling = true` 后直接调用本引擎。
-- **退出**：新增 ADR 编号追加到 `state.json.knowledge.adrs[]`；置 `flags.domain_modeling_done = true`。后续 skill 必须用 `workflow-plugin/memory/context.md` 术语表词汇并尊重已写 ADR。
-- **收敛规则**：同 grilling 引擎（每 3 轮摘要，最多 7 轮，用户说“够了”即止）。
+- **退出**：新增 ADR 编号追加到 `state.json.knowledge.adrs[]`；置 `flags.domain_modeling_done = true`。后续 skill 必须用 `.get-to-work/memory/context.md` 术语表词汇并尊重已写 ADR。
+- **收敛规则**：同 grilling 引擎（不设轮次上限，不主动问继续，仅用户显式喊停时退出；详见 `engines/grilling/SKILL.md`）。

@@ -11,7 +11,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 > 下方为英文原 prompt，保持原装以发挥原 skill 能力。
 >
 > 本插件适配（与原版差异）：
-> - 原版 "publish to the project issue tracker" → 本插件 spec 写入 `workflow-plugin/memory/specs/{YYYY-MM-DD}-{slug}.md`。
+> - 原版 "publish to the project issue tracker" → 本插件 spec 写入 `.get-to-work/memory/specs/{YYYY-MM-DD}-{slug}.md`。
 > - 原版 "run `/setup-matt-pocock-skills` if not" → 本插件不需要 setup（忽略该句）。
 > - 原版内联 `<prd-template>` → 本插件使用 `workflow-plugin/templates/spec-template.md`（单一模板源）。
 > - 使用模板时，跳过 HTML 注释内容，只填充实际字段。
@@ -26,7 +26,7 @@ This skill takes the current conversation context and codebase understanding and
 
    Check with the user that these seams match their expectations.
 
-3. Write the PRD using the template at `workflow-plugin/templates/spec-template.md`. Write it to `workflow-plugin/memory/specs/{YYYY-MM-DD}-{slug}.md`.
+3. Write the PRD using the template at `workflow-plugin/templates/spec-template.md`. Write it to `.get-to-work/memory/specs/{YYYY-MM-DD}-{slug}.md`.
 
 ## Phase exit
 
@@ -44,4 +44,6 @@ This skill takes the current conversation context and codebase understanding and
 - **入口**：orchestrator STATE 2（REQUIREMENT_REFINEMENT）调用本 skill。
 - **退出**：→ CONFIRM_SPEC（停下等用户）。
 - **禁止质询**：只综合已有信息，不主动提问。如有不确定项，标注在 spec 的 `open_questions` 中。
-- **域词汇**：若 `workflow-plugin/memory/context.md` 存在，使用其术语表词汇；若 `workflow-plugin/memory/adr/` 下有 ADR，尊重其决策。
+- **域词汇**：若 `.get-to-work/memory/context.md` 存在，使用其术语表词汇；若 `.get-to-work/memory/adr/` 下有 ADR，尊重其决策。
+- **Pattern 复用**：若 `.get-to-work/memory/patterns/` 下有适用 Pattern，优先引用其结构而非重新发明。
+- **外部库文档**：若 spec 涉及不熟悉的外部库 API，用 `mcp__context7__resolve-library-id` + `mcp__context7__query-docs` 查最新文档，避免基于过时训练数据写 spec。

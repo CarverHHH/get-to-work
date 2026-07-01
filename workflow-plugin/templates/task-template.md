@@ -2,7 +2,7 @@
 
 <!--
 生成者：task-planner skill（STATE 3）。
-写入路径：workflow-plugin/memory/plans/{YYYY-MM-DD}-{slug}.md。
+写入路径：.get-to-work/memory/plans/{YYYY-MM-DD}-{slug}.md。
 确认状态：⬜ 待确认 / ✅ 已确认（CONFIRM_PLAN）。
 字段来源：What to build / Acceptance criteria / Blocked by / Parent 来自 mattpocock to-issues；
 Goal / Architecture / Tech Stack / Global Constraints / Files / Interfaces / Steps 来自 superpowers writing-plans；

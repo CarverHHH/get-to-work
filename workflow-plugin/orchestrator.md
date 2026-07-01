@@ -5,16 +5,21 @@
 
 ## 0. 启动协议
 
-1. 读取 `workflow-plugin/state.json`（当前状态）。
+1. 读取 `.get-to-work/state.json`（当前状态）。
 2. 解析用户输入参数：
    - `--resume` → 跳到 §7 恢复协议
-   - `--status` → 输出 state.json 摘要，结束
+   - `--status` → 输出 state.json 摘要 + 按 `current_state` 的"下一步指引"（见 `commands/to-work.md`），结束
    - `--lite <需求>` → 强制 `mode = "lite"`
    - `--inline <需求>` → 强制 `execution_strategy = "inline"`
    - `--sdd <需求>` → 强制 `execution_strategy = "sdd"`
+   - `--spec-only <需求>` → 置 `flags.single_phase = "spec"`（跑到 CONFIRM_SPEC 输出 spec 后结束，不进 PLANNING）
+   - `--plan-only` → 前提 `spec.confirmed = true`，置 `flags.single_phase = "plan"`（跑到 CONFIRM_PLAN 输出 plan 后结束）
+   - `--execute` → 前提 `plan.confirmed = true`，置 `flags.single_phase = "execute"`（跑 EXECUTION_LOOP → VERIFICATION 后停，不自动 COMMIT）
    - `<需求>` → 正常启动
 3. 把用户输入作为 `input` 写入 state.json，`current_state = INPUT_ANALYSIS`，`started_at = now`。
-4. 从 STATE 1 开始，按下文状态机执行。
+4. **装载历史 Lesson**（防重蹈覆辙）：若 `.get-to-work/memory/lessons/` 非空，Glob 近 5 条，读取各文件的标题与 `tags` 行（不读全文，控 context），作为"本次需避开的已知坑"注入。
+5. **探测项目验证命令**（缓存供 verifier/subagent 复用，避免每次猜）：读 `package.json` scripts / `Makefile` / `pyproject.toml` / `Cargo.toml` 等，提取 lint/test/build 命令写入 `state.json.verification.commands`（探测不到则留空，verifier 自行识别）。
+6. 从 STATE 1 开始，按下文状态机执行。
 
 **跨 skill 调用约定**：需要某能力时，`读取 workflow-plugin/skills/<name>/SKILL.md 并按其规格执行`。
 **禁止用 `@` 强加载**（烧 context）；改用显式 `读取 …/SKILL.md`，可控、可审计。
@@ -59,16 +64,22 @@ IDLE → INPUT_ANALYSIS → [分支]
 
 **每个状态转移点，你必须执行 Read-Modify-Write：**
 
-1. `Read` `workflow-plugin/state.json`；
+1. `Read` `.get-to-work/state.json`；
 2. 修改对应字段（见各 STATE 的"state 更新"）；
 3. `Write` 回 `state.json`；
 4. 在 `history[]` 追加一条 `{"from": <prev>, "to": <next>, "at": <ISO8601>, "action": <一句>}`；
 5. `updated_at = now`；
 6. **Write 后立即 Read back 验证 JSON 有效性**；若无效，从上一次有效的 history 条目重建字段。
 
-**history[] 约束**：最多保留 **10 条**（超出时删除最旧的）。
+**history[] 约束**：最多保留 **20 条**（超出时删除最旧的）——长流程（complex 多 task）的 CLARIFICATION 决策演进需可回溯，10 条易被挤出。
 
 **无脚本、零依赖**——状态机靠你读写这个文件推进。`state.json` 是唯一状态真源。
+
+**progress.md（人类可读层）**：每次状态转移 Write state.json 后，额外 Write `.get-to-work/memory/progress.md`（checkbox 风格）：标题=需求摘要、Current=state + task i/n、Spec/Plan 路径 + ✅、Tasks 列表带 `[x]`/`[ ]`、Verification/Commit/Knowledge 状态。`cat progress.md` 即可看进度，不替代 state.json。
+
+**EXECUTION_LOOP phase 实时同步**：Inline 模式下每个 phase 切换（RED→GREEN→REFACTOR）立即更新 `state.json.execution.phase`，缩小 resume 窗口——避免"代码已写但 state 停在 RED"导致 resume 重跑覆盖已写实现。
+
+**状态可见性文件**：每次转移同时写 `/tmp/get-to-work-status`（单行：`{current_state} | task {i}/{n} | {mode}`），供 statusline（如 claude-hud）实时读取，零交互可见。
 
 ## 4. 各 STATE 详细规格
 
@@ -112,10 +123,7 @@ IDLE → INPUT_ANALYSIS → [分支]
   - 否则 `needs_clarification = true` → 读取 `workflow-plugin/engines/grilling/SKILL.md` 执行
   - 两者都 true → 只调 domain-modeling（含 grilling 能力，不重复）
 
-- **收敛规则**：
-  - 每 3 轮质询后，输出"当前共识摘要"+ 询问"继续深入还是已经足够？"
-  - 最多 7 轮自动收敛：输出完整共识 + "质询已达 7 轮，建议进入下一步"
-  - 用户任何时候说"够了/可以了/差不多了" → 立即收敛退出
+- **收敛规则**（详见 `engines/grilling/SKILL.md`）：不设轮次上限，走完 design tree 每个分支；不主动问"继续还是够了"；仅当用户显式喊停（停/结束/进入下一步/够了/不用再问）时退出，"OK/差不多/可以"等随口应答不触发退出。
 
 - **退出**：共识写回 `state.json.input`（追加 `## Clarification Consensus` 段）→ STATE 2。
 - **state 更新**：`flags.clarification_done = true` / `flags.domain_modeling_done = true`。
@@ -131,7 +139,7 @@ IDLE → INPUT_ANALYSIS → [分支]
 - **动作**：读取 `workflow-plugin/skills/spec-writer/SKILL.md`，执行综合 spec。
 - **验证门 ◇ CONFIRM_SPEC**：spec 全字段填齐？`open_questions` 已标？
   - 输出 spec 摘要 + 确认请求，**置 `current_state = CONFIRM_SPEC`，停下等用户**。
-- **出口(yes)**：用户确认 → STATE 3。
+- **出口(yes)**：用户确认 → 若 `flags.single_phase = "spec"`，输出 spec 路径后 → DONE（不进 PLANNING）；否则 → STATE 3。
 - **回边(no)**：用户要改 → 回 REQUIREMENT_REFINEMENT 修订 spec。
 - **state 更新**：`spec.path` / `spec.confirmed` / `spec.open_questions`。
 
@@ -144,12 +152,13 @@ IDLE → INPUT_ANALYSIS → [分支]
 - **入口**：`current_state = PLANNING`。
 - **动作**：
   - `mode = "lite"` → orchestrator 直接生成简化 plan（不调用 task-planner skill）：
-    - 1-2 个简单步骤，不写文件到 memory/plans/
+    - 1-2 个简单步骤，不写文件到 .get-to-work/memory/plans/
     - 存入 `state.json.plan.inline_tasks`（JSON array）
   - `mode = "full"` → 读取 `workflow-plugin/skills/task-planner/SKILL.md`，执行拆解 task。
+  - **熔断重入**（`execution.status = blocked` 且 `fix_count ≥ 3` 进入）：task-planner 只重规划 `current_task_index` 对应的失败 task，传入失败原因（`stop_reason` + fix 历史），**不重生成已完成 task**（`plan.completed_task_indexes` 保留）；重规划后 `plan.confirmed = false` 仍需过 CONFIRM_PLAN，但摘要只呈现改动的 task。
 - **验证门 ◇ CONFIRM_PLAN**：plan 纵向切片？依赖序正确？No placeholders？
   - 输出 plan 摘要 + 确认请求，**置 `current_state = CONFIRM_PLAN`，停下等用户**。
-- **出口(yes)**：用户确认 → STATE 4。
+- **出口(yes)**：用户确认 → 若 `flags.single_phase = "plan"`，输出 plan 路径后 → DONE（不进 EXECUTION）；`flags.single_phase = "execute"` 时跳过本确认点直接 STATE 4；否则 → STATE 4。
 - **回边(no)**：用户要改 → 回 PLANNING 修订。
 - **state 更新**：`plan.path` / `plan.confirmed` / `plan.total_tasks` / `plan.current_task_index = 0`。
 
@@ -280,12 +289,12 @@ IDLE → INPUT_ANALYSIS → [分支]
 ### 7.2 压缩前自动保存（由 pre-compact hook 完成）
 
 1. state.json 已是最新（每次状态转移都实时写入）
-2. hook 额外保存 `{ git_status, git_stash_list, branch, uncommitted_count }` → `.pre-compact-state.json`
+2. hook 额外保存 `{ git_status, git_stash_list, branch, uncommitted_count }` → `.get-to-work/.pre-compact-state.json`
 
 ### 7.3 压缩后恢复（`/to-work --resume`）
 
-1. Read `workflow-plugin/state.json`
-2. Read `.pre-compact-state.json`（若存在）
+1. Read `.get-to-work/state.json`
+2. Read `.get-to-work/.pre-compact-state.json`（若存在）
 3. 输出恢复摘要：
    - 工作流阶段：{current_state}
    - 当前模式：{mode}（lite/full/bug）

@@ -1,6 +1,7 @@
 ---
 name: grilling
 description: Interview the user relentlessly about a plan or design. Use when the user wants to stress-test a plan before building, or uses any 'grill' trigger phrases.
+disable-model-invocation: true
 ---
 
 # grilling
@@ -16,6 +17,8 @@ Ask the questions one at a time, waiting for feedback on each question before co
 If a question can be answered by exploring the codebase, explore the codebase instead.
 
 ## Interface with orchestrator（中文适配层）
+
+> 仅在 orchestrator STATE 1.5 上下文中执行下列 state.json 写回；经 `/grill-me` 独立调用本引擎时，跳过 state.json 写回，直接在对话中输出 `## Clarification Consensus` 段即可。
 
 - **入口**：orchestrator STATE 1.5（CLARIFICATION）置 `flags.needs_clarification = true` 后直接调用本引擎。
 - **退出**：把达成的共识写成结构化摘要，写回 `state.json.input`（追加 `## Clarification Consensus` 段），并置 `flags.clarification_done = true`，交还 orchestrator 进入 STATE 2。
@@ -38,8 +41,11 @@ If a question can be answered by exploring the codebase, explore the codebase in
 - 每个决策点必须有明确结论（不能是“待定”）
 - 若有未解决项，标注“留待 spec 阶段”，不阻塞进入 STATE 2
 
-## 收敛规则（显式停止条件）
+## 收敛规则（软停止）
 
-- 每 **3 轮**质询后，输出“当前共识摘要”并询问用户“继续深入还是已经足够？”
-- 最多 **7 轮**自动收敛：输出完整共识 + “质询已达 7 轮，建议进入下一步”
-- 用户任何时候说“够了/可以了/差不多了/OK/没问题” → 立即收敛退出
+- 不设轮次上限，遵循原 prompt 的 “relentlessly … until we reach a shared understanding”——走完 design tree 每个分支再停。
+- 不主动问”继续深入还是已经足够？”（避免给用户提前退出的台阶）。
+- **阶段性进度可见**（只通报、不截断）：每 **10 轮**输出一次”已覆盖分支 + 未深入分支”清单，让用户看到进度并主动决定是否还要深入，而非被动问”够了没”。
+- 仅当用户**显式**表达停止意图时退出，触发词限定为：`停 / 停止 / 结束 / 进入下一步 / 进入 spec / 够了 / 不用再问了` 等。
+- 模糊随口的 `OK / 差不多 / 可以 / 嗯 / 行` **不**触发退出，视为对当前问题的反馈，继续深挖未走完的分支。
+- 收敛时输出完整 `## Clarification Consensus` 段并退出。

@@ -14,9 +14,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 | 类型 | 写入路径 | 模板 |
 |------|----------|------|
-| ADR | `workflow-plugin/memory/adr/NNNN-{slug}.md` | `workflow-plugin/templates/adr-template.md` |
-| Lesson | `workflow-plugin/memory/lessons/{YYYY-MM-DD}-{slug}.md` | `workflow-plugin/templates/lesson-template.md` |
-| Pattern | `workflow-plugin/memory/patterns/{slug}.md` | `workflow-plugin/templates/pattern-template.md` |
+| ADR | `.get-to-work/memory/adr/NNNN-{slug}.md` | `workflow-plugin/templates/adr-template.md` |
+| Lesson | `.get-to-work/memory/lessons/{YYYY-MM-DD}-{slug}.md` | `workflow-plugin/templates/lesson-template.md` |
+| Pattern | `.get-to-work/memory/patterns/{slug}.md` | `workflow-plugin/templates/pattern-template.md` |
 
 ## 质量门
 
@@ -35,7 +35,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 ### Pattern 双重门（两门全过才写）
 
-1. **2+ 次出现** — 本次工作流中 2 个以上 task 出现相同结构/做法
+1. **2+ 次出现** — 跨工作流累计 2+ 次出现相同结构/做法（读取 `.get-to-work/memory/patterns/` 已有 Pattern 与本次候选比对，非仅限本次工作流内）
 2. **可模板化** — 能抽象为通用做法，不是过于具体
 
 ## Process
@@ -51,7 +51,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep
    - 逐个过双重门
 
 3. **扫描 Pattern 候选**：
-   - 2+ task 中重复出现的代码结构/文件组织/约定
+   - 本次工作流 2+ task 重复出现的结构/约定
+   - 读取 `.get-to-work/memory/observations.jsonl`（若存在）找高频操作序列作为候选来源
+   - 读取 `.get-to-work/memory/patterns/` 已有 Pattern，判断本次候选是否与之重复或可合并（跨工作流累计计数）
    - 逐个过双重门
 
 4. **输出候选列表**：
@@ -60,13 +62,21 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 5. **用户确认后写入**：
    - 用户选择保留的 → 读取对应模板 → 填充内容 → 写入对应路径
-   - ADR 编号自增（读取 `memory/adr/` 下最大编号 +1）
+   - ADR 编号自增（读取 `.get-to-work/memory/adr/` 下最大编号 +1）
 
-6. **无候选时**：
+6. **回流项目 CLAUDE.md**（打通"沉淀 → 下次 session 自动加载"闭环）：
+   - 仅当新增了 ADR 或 Lesson 时执行（Pattern 体量大，不回流，由 spec-writer/task-planner 按需读取）
+   - 在项目根 `CLAUDE.md`（cwd 下；不存在则提示用户是否创建）追加**一行引用链接**到对应段：
+     - ADR → `## Architecture Decisions` 段：`- [ADR-NNNN: 标题](.get-to-work/memory/adr/NNNN-xxx.md)`
+     - Lesson → `## Lessons` 段：`- [Lesson: 标题](.get-to-work/memory/lessons/YYYY-MM-DD-xxx.md)`
+   - 只追加链接不复制全文（控 CLAUDE.md 长度）；段不存在则先创建段标题再追加
+
+7. **无候选时**：
    - 全部被门槛过滤 → 静默跳过，输出"本次无新增知识条目"，不打扰用户
 
 ## Interface with orchestrator（中文适配层）
 
 - **入口**：orchestrator STATE 7（KNOWLEDGE_CAPTURE），前提 COMMIT 完成或跳过。
-- **退出**：写入完成 → 置 `state.json.knowledge.adrs[]` / `.lessons[]` / `.patterns[]` 追加新增条目路径 → 进 DONE。
+- **退出**：写入完成 → 置 `state.json.knowledge.adrs[]` / `.lessons[]` / `.patterns[]` 追加新增条目路径 → 回流 CLAUDE.md（见 Process 6）→ 进 DONE。
 - **澄清阶段已写的 ADR 不重复写**：检查 `state.json.knowledge.adrs[]` 避免重复。
+- **Lesson/Pattern 去重**：写入前与 `.get-to-work/memory/lessons/`、`.get-to-work/memory/patterns/` 已有条目比对标题/标签，重复则合并而非新建。

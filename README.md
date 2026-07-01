@@ -31,6 +31,16 @@ ln -s /abs/path/to/get-to-work .claude/get-to-work
 
 安装后 `/to-work` slash command 即可用。
 
+> **工作流产出位置（per-project 隔离）**：`state.json` + `memory/`（specs/plans/adr/lessons/patterns/context.md/observations.jsonl）写入**项目根 `.get-to-work/`**，不在插件目录——每个项目独立，互不串扰。首次运行自动创建。建议在项目 `.gitignore` 加：
+>
+> ```gitignore
+> .get-to-work/state.json
+> .get-to-work/.pre-compact-state.json
+> .get-to-work/.tool-call-counter.json
+> .get-to-work/memory/observations.jsonl
+> # .get-to-work/memory/ 下的 specs/plans/adr/lessons/patterns 按需提交（团队共享）或忽略
+> ```
+
 ### 方式 B：手动引用
 
 把 `workflow-plugin/` 复制到项目，手动让 Claude 读取 `workflow-plugin/orchestrator.md`。
@@ -99,13 +109,10 @@ get-to-work/
 │   ├── scripts/                        # 辅助 shell 脚本
 │   │   ├── task-brief.sh               # SDD task 摘要
 │   │   └── review-package.sh           # SDD 评审打包
-│   └── memory/
-│       ├── adr/                        # ADR 知识库
-│       ├── lessons/                    # Lesson 知识库
-│       ├── patterns/                   # Pattern 知识库
-│       ├── specs/                      # PRD 输出
-│       ├── plans/                      # 计划输出
-│       └── context.md                  # 项目上下文
+│   └── memory/adr/0000-template.md     # 模板指针（指向 templates/adr-template.md）
+│                                       # 注：工作流产出（state.json + memory/{specs,plans,
+│                                       # adr,lessons,patterns,context.md,observations.jsonl}）
+│                                       # 写入项目根 .get-to-work/（per-project 隔离），不存插件目录
 ├── CLAUDE.md                           # 项目宪法
 └── README.md                           # 本文件
 ```
@@ -193,7 +200,7 @@ PreToolUse hooks 使用 Claude Code 标准输出格式：
 
 | 能力 | 整合自 | 关键模式 |
 |------|--------|----------|
-| grilling 引擎 | mattpocock `grilling` | 一次一问 / 提供建议答案 / 能查代码就别问 / 7 轮自动收敛 |
+| grilling 引擎 | mattpocock `grilling` | 一次一问 / 提供建议答案 / 能查代码就别问 / 不设轮次上限·软停止 |
 | domain-modeling 引擎 | mattpocock `domain-modeling` | 术语表 + ADR 三重门 + 场景探测 |
 | spec-writer | mattpocock `to-prd` | 不质询只综合 / 测试接缝 / 验收可测量 |
 | task-planner | mattpocock `to-issues` | 纵向切片 / 依赖序 / 收敛测验 |

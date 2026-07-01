@@ -1,6 +1,6 @@
 <!--
 生成者：knowledge-capture skill（STATE 7）。
-写入路径：workflow-plugin/memory/lessons/{YYYY-MM-DD}-{slug}.md。
+写入路径：.get-to-work/memory/lessons/{YYYY-MM-DD}-{slug}.md。
 质量门：双重门（真踩坑 + 有复用价值）。
 -->
 

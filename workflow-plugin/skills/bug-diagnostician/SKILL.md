@@ -13,7 +13,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, TodoWrite
 
 A discipline for hard bugs. Skip phases only when explicitly justified.
 
-When exploring the codebase, read `workflow-plugin/memory/context.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
+When exploring the codebase, read `.get-to-work/memory/context.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
 
 ## Phase 1 — Build a feedback loop
 
@@ -131,3 +131,4 @@ Required before declaring done:
 - **退出（正常）**：Fix 完成 + regression test green → 进入 STATE 5（VERIFICATION 全量三件套）→ COMMIT → KNOWLEDGE_CAPTURE → DONE。
 - **退出（熔断）**：Phase 1 无法建立反馈循环 → STOP（列出已尝试的方法，请求用户帮助）。Phase 5 fix_count ≥ 3 → STOP。
 - **state 更新**：置 `execution.phase` 为 `bug-phase-{1-6}`；fix_count 在 Phase 5 累计。
+- **外部库文档**：Phase 1 建反馈循环 / Phase 4 探测时，若 bug 涉及第三方库行为，用 `mcp__context7__resolve-library-id` + `mcp__context7__query-docs` 查 API 契约，确认是否为库的预期行为而非 bug。

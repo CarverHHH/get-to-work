@@ -2,7 +2,7 @@
 
 <!--
 生成者：spec-writer skill（STATE 2）。来源 mattpocock to-prd 的 prd-template。
-写入路径：workflow-plugin/memory/specs/{YYYY-MM-DD}-{slug}.md。
+写入路径：.get-to-work/memory/specs/{YYYY-MM-DD}-{slug}.md。
 确认状态：⬜ 待确认 / ✅ 已确认（CONFIRM_SPEC）。
 测试接缝（Test seams）在 spec-writer Process step 2 草拟并与用户核对；可记入 Implementation Decisions。
 -->
@@ -53,6 +53,10 @@ A list of testing decisions that were made. Include:
 ## Out of Scope
 
 A description of the things that are out of scope for this PRD.
+
+## Open Questions
+
+Unresolved or ambiguous items deferred to clarification / spec refinement. Each entry: the question + why it matters + (if known) the options under consideration. `spec-writer` writes the count of these into `state.json.spec.open_questions` (0 = all clear).
 
 ## Further Notes
 

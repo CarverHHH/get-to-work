@@ -11,7 +11,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 > 下方为英文原 prompt，保持原装以发挥原 skill 能力。
 >
 > 本插件适配（与原版差异）：
-> - 原版 "publish issues to the issue tracker" → 本插件 plan 写入 `workflow-plugin/memory/plans/{YYYY-MM-DD}-{slug}.md`。
+> - 原版 "publish issues to the issue tracker" → 本插件 plan 写入 `.get-to-work/memory/plans/{YYYY-MM-DD}-{slug}.md`。
 > - 原版 `ready-for-agent` triage label → 本插件略（task list 即认领单元）。
 > - 原版内联 `<issue-template>` → 本插件使用 `workflow-plugin/templates/task-template.md`（单一模板源）。
 > - 收敛测验（Quiz the user）保留，对应 CONFIRM_PLAN 确认点。
@@ -57,7 +57,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Write the plan
 
-For each approved slice, write a task using the template at `workflow-plugin/templates/task-template.md`. Write the complete plan to `workflow-plugin/memory/plans/{YYYY-MM-DD}-{slug}.md`. `Blocked by` references real Task numbers in dependency order.
+For each approved slice, write a task using the template at `workflow-plugin/templates/task-template.md`. Write the complete plan to `.get-to-work/memory/plans/{YYYY-MM-DD}-{slug}.md`. `Blocked by` references real Task numbers in dependency order.
 
 Do NOT close or modify any parent issue.
 
@@ -86,4 +86,5 @@ Do NOT close or modify any parent issue.
 - **入口**：orchestrator STATE 3（PLANNING），前提 `spec.confirmed = true`。
 - **退出**：→ CONFIRM_PLAN（停下等用户）。
 - **收敛测验**：到用户批准为止。
+- **Pattern 复用**：若 `.get-to-work/memory/patterns/` 下有适用 Pattern（典型切片结构、文件组织约定），优先套用而非重新设计。
 - **lite 模式不调用本 skill**：lite 模式下 orchestrator 直接生成简化 plan。

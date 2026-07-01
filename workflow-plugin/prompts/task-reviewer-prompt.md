@@ -6,13 +6,14 @@
 
 1. **Spec 合规**：diff 是否完成了 task 描述的所有验收标准？
 2. **代码质量**：无明显 bug、无安全漏洞、无性能问题
-3. **测试覆盖**：新代码是否有对应测试？测试是否覆盖了关键路径？
-4. **副作用**：是否引入 task 范围外的变更？
+3. **测试覆盖**：新代码是否有对应测试？测试是否覆盖了关键路径？是否真守 TDD（先写失败测试再实现）？
+4. **副作用 / Scope**：scope 以 Task 的 `Files` 字段为准；diff 中超出 Files 的变更标注为 scope-leak（Important）。若 diff 已按 Files 限定（见下方 Diff），则此项默认通过。
+5. **Domain 一致**：命名与决策是否遵循 `## Domain Model` 段的术语表与 ADR？与 ADR 冲突的实现判为 Critical。
 
 ## 严重度分类
 
-- **Critical**：必须修复（逻辑 bug、安全漏洞、spec 不达标、测试缺失）
-- **Important**：应当修复（性能问题、可维护性差、错误处理不完整）
+- **Critical**：必须修复（逻辑 bug、安全漏洞、spec 不达标、测试缺失、与 ADR 冲突）
+- **Important**：应当修复（性能问题、可维护性差、错误处理不完整、scope-leak）
 - **Minor**：建议修复（命名、风格、注释）— 不阻塞通过
 
 ## 判定规则
@@ -44,6 +45,10 @@ VERDICT: APPROVED
 SPEC_COMPLIANCE: 全部达标
 SUMMARY: 代码质量良好，所有验收标准已满足。
 ```
+
+## Domain Model（术语表与决策，对照检查）
+
+{DOMAIN_MODEL_PLACEHOLDER}
 
 ## Task Spec
 

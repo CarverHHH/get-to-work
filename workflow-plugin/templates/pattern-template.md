@@ -1,6 +1,6 @@
 <!--
 生成者：knowledge-capture skill（STATE 7）。
-写入路径：workflow-plugin/memory/patterns/{slug}.md。
+写入路径：.get-to-work/memory/patterns/{slug}.md。
 质量门：双重门（2+ 次出现 + 可模板化）。
 -->
 

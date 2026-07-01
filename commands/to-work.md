@@ -1,6 +1,6 @@
 ---
 description: 自然语言需求 → spec → plan → TDD 执行 → 验证 → commit → 知识沉淀。状态机驱动的工作流入口。
-argument-hint: "[需求] | --resume | --status | --lite [需求] | --inline [需求] | --sdd [需求]"
+argument-hint: "<需求> | --resume | --status | --lite <需求> | --inline <需求> | --sdd <需求>"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite, Task
 ---
 
